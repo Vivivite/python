@@ -2,8 +2,10 @@
 from django.db import models
 
 class Page_Manager(models.Manager):
-    pass
     
+    def compteur_manager(self, request):
+        return super(Page_Manager, self).get_queryset().filter(date=date.today(), url=request.build_absolute_uri(request.path)).update(compteur=F('compteur') + 1 )
+        
 class Page_Model(models.Model):
     ....
     compteur = models.IntegerField(null=True, blank=True, default="0")
@@ -24,4 +26,8 @@ from django.db.models import F
 
 def page(request):
   zz = Page.obj.filter(date=date.today(), url=request.build_absolute_uri(request.path))
-  zz.values('compteur').update(compteur=F('compteur') + 1 )
+  zz.update(compteur=F('compteur') + 1 )
+  
+  ... ou
+  
+  Page.obj.compteur_manager(request)
